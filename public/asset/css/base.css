@@ -1,0 +1,8 @@
+.sidebar {
+    height: 500px;
+    background: orange;
+}
+.content {
+    height:500px;
+    background:pink;
+}

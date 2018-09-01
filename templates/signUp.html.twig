@@ -1,0 +1,64 @@
+{% extends "layout/layout.html.twig" %}
+
+{% block title %}新規登録{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    新規登録
+                </div>
+                <div class="panel-body">
+                    <form action="/registerAccount" method="post">
+
+                        {# CSRF #}
+                        <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+                        <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+
+                        <div class="form-group">
+                            <label for="InputEmail">メールアドレス
+                                {% if (flash is not empty) and (flash.errors[0].email[0] is not empty) %}
+                                    <span class="label label-danger">{{ flash.errors[0].email[0] }}</span>
+                                {% endif %}
+                            </label>
+                            <input type="email" class="form-control" id="InputEmail" name="email"
+                                   placeholder="メールアドレスを入力して下さい。"
+                                   value={{ (flash is not empty) and (flash.email is not empty) ?  flash.email[0] : "" }}>
+                        </div>
+                        <div class="form-group">
+                            <label for="InputAccount">アカウント名
+                                {% if (flash is not empty) and (flash.errors[0].account[0] is not empty) %}
+                                    <span class="label label-danger">{{ flash.errors[0].account[0] }}</span>
+                                {% endif %}
+                            </label>
+                            <input type="text" class="form-control" id="InputAccount" name="account"
+                                   placeholder="アカウント名"
+                                   value={{ (flash is not empty) and (flash.account is not empty) ?  flash.account[0] : "" }}>
+                        </div>
+                        <div class="form-group">
+                            <label for="InputPassword">パスワード
+                                {% if (flash is not empty) and (flash.errors[0].password[0] is not empty) %}
+                                    <span class="label label-danger">{{ flash.errors[0].password[0] }}</span>
+                                {% endif %}
+                            </label>
+                            <input type="password" class="form-control" id="InputPassword" name="password"
+                                   placeholder="パスワード">
+                        </div>
+                        <div class="form-group">
+                            <label for="InputPassword">もう一度パスワードを入力してください
+                                {% if (flash is not empty) and (flash.errors[0].password2[0] is not empty) %}
+                                    <span class="label label-danger">{{ flash.errors[0].password2[0] }}</span>
+                                {% endif %}
+                            </label>
+                            <input type="password" class="form-control" id="InputPassword" name="password2"
+                                   placeholder="もう一度パスワードを入力してください">
+                        </div>
+                        <button type="submit" class="btn btn-default">新規登録</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
