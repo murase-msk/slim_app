@@ -22,29 +22,31 @@ class AccountModel
         $this->con = $pdo;
     }
 
-    public function getData()
-    {
-        $sql = 'select * from new_table';
-        $stmt = $this->con->prepare($sql);
-        $stmt->execute(array());
-        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return $result;
+//    public function getData()
+//    {
+//        $sql = 'select * from new_table';
+//        $stmt = $this->con->prepare($sql);
+//        $stmt->execute(array());
+//        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+//        return $result;
+//
+//    }
 
-    }
+
 
     /**
      * アカウントを登録する
-     *
-     * @param [type] $data
-     * @return void
+     * @param $email
+     * @param $account
+     * @param $password
      */
-    public function insertAccountData($data)
+    public function insertAccountData($email, $account, $password)
     {
         $sql = 'insert into account (name, email, password) values(:name, :email, :password)';
         $stmt = $this->con->prepare($sql);
-        $stmt->bindParam(':name', $data['account']);
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':password', $data['password']);
+        $stmt->bindParam(':name', $account);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $password);
         $stmt->execute();
     }
 
@@ -76,6 +78,21 @@ class AccountModel
         return $stmt->fetchColumn(0) === 0 ? false: true;
     }
 
+    /**
+     * アカウント認証
+     * @param $account
+     * @param $password
+     * @return bool
+     */
+    public function isAuthAccount($account, $password)
+    {
+        $sql = 'select count(*) from account where name = :account and password = :password';
+        $stmt = $this->con->prepare($sql);
+        $stmt->bindParam(':account', $account);
+        $stmt->bindParam(':password', $password);
+        $stmt->execute();
+        return $stmt->fetchColumn(0) === 0 ? false: true;
+    }
     // /**
     //  * すべてのアカウント情報を取得する
     //  *

@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class AccountAuth
+ * ログイン状態を管理する
  * @package src\Middleware\Auth
  */
 class AccountAuth

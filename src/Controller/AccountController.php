@@ -9,6 +9,10 @@
 namespace src\Controller;
 
 use src\Model\AccountModel;
+//use Psr\Http\Message\ServerRequestInterface;
+//use Psr\Http\Message\ResponseInterface;
+use Slim\Http\Response;
+use Slim\Http\Request;
 
 class AccountController extends BaseController
 {
@@ -18,7 +22,7 @@ class AccountController extends BaseController
     private $csrf;
     private $flash;
 
-    function __construct(\Slim\Views\Twig $view, AccountModel $accountModel, $router, $csrf, $flash)
+    function __construct(\Slim\Views\Twig $view, AccountModel $accountModel, \Slim\Router $router, \Slim\Csrf\Guard $csrf, \Slim\Flash\Messages $flash)
     {
         parent::__construct();
         $this->view = $view;
@@ -30,104 +34,139 @@ class AccountController extends BaseController
 
     /**
      * ログインページ
-     *
-     * @param $request
-     * @param $response
-     * @param $args
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function signIn($request, $response, $args)
+    public function signIn(
+        /** @noinspection PhpUnusedParameterInspection */
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        Response $response,
+        /** @noinspection PhpUnusedParameterInspection */
+        array $args)
     {
-        return $this->view->render($response, 'signIn.html.twig', []);
+        // フラッシュメッセージ取得.
+        $flash = $this->flash->getMessages();
+        return $this->view->render($response, 'signIn.html.twig',
+            [
+                'csrf' => parent::generateCsrfKeyValue($request, $this->csrf)['csrf'],
+                'flash' => $flash
+            ]);
     }
 
     /**
-     * 新規登録
-     *
-     * @param $request
-     * @param $response
-     * @param $args
+     * 新規登録ページ
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function signUp($request, $response, $args)
+    public function signUp(
+        /** @noinspection PhpUnusedParameterInspection */
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        Response $response,
+        /** @noinspection PhpUnusedParameterInspection */
+        array $args)
+
     {
-        // CSRF用Key-Value生成.
-        $csrfNameKey = $this->csrf->getTokenNameKey();//'csrf_name';
-        $csrfValueKey = $this->csrf->getTokenValueKey();//'csrf_value';
-        $csrfName = $request->getAttribute($csrfNameKey);
-        $csrfValue = $request->getAttribute($csrfValueKey);
-
+        // フラッシュメッセージ取得.
         $flash = $this->flash->getMessages();
-        //var_dump($flash['errors'][0]['email'][0]);
-
         return $this->view->render(
             $response,
             'signUp.html.twig',
             [
-                'csrf'   => [
-                    'keys' => [
-                        'name'  => $csrfNameKey,
-                        'value' => $csrfValueKey
-                    ],
-                    'name'  => $csrfName,
-                    'value' => $csrfValue
-                ],
+                'csrf' => parent::generateCsrfKeyValue($request, $this->csrf)['csrf'],
                 'flash' => $flash
             ]
-
         );
     }
 
     /**
      * ログアウト
-     * @param $request
-     * @param $response
-     * @param $args
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function logout($request, $response, $args)
+    public function logout(
+        /** @noinspection PhpUnusedParameterInspection */
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        Response $response,
+        /** @noinspection PhpUnusedParameterInspection */
+        array $args)
+
     {
-        // セッション登録.
+        // セッション削除して非ログイン状態を登録.
+        $_SESSION = array();
         $_SESSION['isAuth'] = false;
         $_SESSION['account'] = '';
-
-        // TODO:リダイレクトする.
-        return $this->view->render(
-            $response,
-            'sampleApp.html.twig',
-            [
-                'session' => $_SESSION
-            ]
-        );
+        // トップページへリダイレクト.
+        $uri = $request->getUri()->withPath($this->router->pathFor('index'));
+        return $response->withRedirect((string)$uri, 301);
     }
+
 
     /**
      * ログインの認証
-     * @param $request
-     * @param $response
-     * @param $args
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
-    public function auth($request, $response, $args)
+    public function auth(
+        /** @noinspection PhpUnusedParameterInspection */
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        Response $response,
+        /** @noinspection PhpUnusedParameterInspection */
+        array $args)
+
     {
-        var_dump($response);
+        // リクエストパラメータ受け取り.
+        $account = $request->getParsedBody()['account'];
+        $password = $request->getParsedBody()['password'];
+        $result = $this->accountModel->isAuthAccount($account, $password);
+        if ($result) {    // ログインできた.
+            // セッション登録.
+            $_SESSION['isAuth'] = true;
+            $_SESSION['account'] = $account;
+            // TODO:ログインボタンを押したときのページへ飛ぶ
+            $uri = $request->getUri()->withPath($this->router->pathFor('index'));
+            return $response->withRedirect((string)$uri, 301);
+        } else {  // ログインできない.
+            $this->flash->addMessage('error', 'アカウント名またはパスワードが違います');
+            $uri = $request->getUri()->withPath($this->router->pathFor('signIn'));
+            return $response->withRedirect((string)$uri, 301);
+        }
     }
 
     /**
      * 新規アカウント登録
-     * @param $request
-     * @param $response
-     * @param $args
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return \Psr\Http\Message\ResponseInterface|Response
      */
-    public function registerAccount($request, $response, $args)
+    public function registerAccount(
+        /** @noinspection PhpUnusedParameterInspection */
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        Response $response,
+        /** @noinspection PhpUnusedParameterInspection */
+        array $args)
+
     {
         // CSRFチェック.
-        if (false === $request->getAttribute('csrf_status')) {
-            // 失敗したらホーム画面へ戻る
-            return $this->view->render(
-                $response, 'sampleApp.html.twig', []
-            );
-        }
+//        if (false === $request->getAttribute('csrf_status')) {
+//            // 失敗したらホーム画面へ戻る
+//            return $this->view->render(
+//                $response, 'sampleApp.html.twig', []
+//            );
+//        }
         // リクエストパラメータ受け取り.
         $email = $request->getParsedBody()['email'];
         $account = $request->getParsedBody()['account'];
@@ -166,12 +205,14 @@ class AccountController extends BaseController
             $uri = $request->getUri()->withPath($this->router->pathFor('signUp'));
             return $response->withRedirect((string)$uri, 301);
         } else {    // 登録可能.
-            $this->accountModel->insertAccountData(['email'=>$email, 'account'=>$account, 'passqord'=>$password]);
+            $this->accountModel->insertAccountData($email, $account, $password);
 
             // セッション登録.
             $_SESSION['isAuth'] = true;
             $_SESSION['account'] = $account;
             // TODO: リダイレクトする
+//            $uri = $request->getUri()->withPath($this->router->pathFor('signIn'));
+//            return $response->withRedirect('signUpComplete.html.twig', 301);
             return $this->view->render(
                 $response,
                 'signUpComplete.html.twig',
@@ -182,16 +223,23 @@ class AccountController extends BaseController
         }
     }
 
-     /**
-     * テスト
-     *
-     * @param $request
-     * @param $response
-     * @param $args
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    public function test($request, $response, $args)
-    {
-        return $this->view->render($response, 'signUpComplete.html.twig', []);
-    }
+//     /**
+//     * テスト
+//     *
+//     * @param $request
+//     * @param $response
+//     * @param $args
+//     * @return \Psr\Http\Message\ResponseInterface
+//     */
+//    public function test(
+//        /** @noinspection PhpUnusedParameterInspection */
+//        Request $request,
+//        /** @noinspection PhpUnusedParameterInspection */
+//        Response $response,
+//        /** @noinspection PhpUnusedParameterInspection */
+//        array $args)
+//
+//    {
+//        return $this->view->render($response, 'signUpComplete.html.twig', []);
+//    }
 }

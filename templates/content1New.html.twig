@@ -1,0 +1,39 @@
+{% extends "layout/layout.html.twig" %}
+
+{% block title %}content1{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    コンテンツ登録
+                </div>
+                <div class="panel-body">
+                    <form action="/content1Register" method="post">
+                        {# CSRF #}
+                        <input type="hidden" name="{{ csrf.keys.name }}" value="{{ csrf.name }}">
+                        <input type="hidden" name="{{ csrf.keys.value }}" value="{{ csrf.value }}">
+
+                        <div class="form-group">
+                            <label for="InputTitle">タイトル</label>
+                            {% if (flash is not empty) and (flash.error[0] is not empty) %}
+                                <span class="label label-danger">{{ flash.error[0] }}</span>
+                            {% endif %}
+                            <input type="text" class="form-control" id="InputTitle" name="title"
+                                   placeholder="タイトル">
+                        </div>
+                        <div class="form-group">
+                            <label for="InputContent">内容</label>
+                            <textarea class="form-control" id="InputContent" name="content"
+                                      placeholder="内容"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-default">登録</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

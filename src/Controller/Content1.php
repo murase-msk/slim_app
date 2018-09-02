@@ -7,8 +7,14 @@
  */
 
 namespace src\Controller;
+use Slim\Http\Response;
+use Slim\Http\Request;
 
-
+/**
+ * Class Content1
+ * @package src\Controller
+ * コンテンツ画面
+ */
 class Content1
 {
 
@@ -19,12 +25,59 @@ class Content1
         $this->view = $view;
     }
 
-    function index($request, $response, $args)
+    function index(
+        /** @noinspection PhpUnusedParameterInspection */
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        Response $response,
+        /** @noinspection PhpUnusedParameterInspection */
+        array $args)
     {
+        // TODO:コンテンツ一覧をDBから取得
+
         return $this->view->render($response, 'content1.html.twig', [
             'name' => 'aaba',
-            'activeHeader' => 'content1'
+            'activeHeader' => 'content1',
+            'isAuth' => $_SESSION['isAuth']
         ]);
+    }
 
+    /**
+     * 新規作成画面
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    function new(
+        /** @noinspection PhpUnusedParameterInspection */
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        Response $response,
+        /** @noinspection PhpUnusedParameterInspection */
+        array $args)
+    {
+        return $this->view->render($response, 'content1New.html.twig', [
+            'activeHeader' => 'content1',
+            'isAuth' => $_SESSION['isAuth']
+        ]);
+    }
+
+    /**
+     * コンテンツ登録
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     */
+    function registerContent(
+        /** @noinspection PhpUnusedParameterInspection */
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        Response $response,
+        /** @noinspection PhpUnusedParameterInspection */
+        array $args)
+    {
+        // TODO:データベース追加.
+        // TODO:登録完了画面へ移動.
     }
 }
