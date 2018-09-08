@@ -10,12 +10,10 @@ class SampleApp
 {
 
     private $view;
-    private $sampleModel;
 
-    public function __construct(\Slim\Views\Twig $view, SampleModel $sampleModel)
+    public function __construct(\Slim\Views\Twig $view)
     {
         $this->view = $view;
-        $this->sampleModel = $sampleModel;
     }
 
     public function index(
@@ -26,6 +24,10 @@ class SampleApp
         /** @noinspection PhpUnusedParameterInspection */
         array $args)
     {
+        if(!isset($_SESSION)){
+            $_SESSION = [];
+        }
+
         //$result = $this->sampleModel->getData();
         return $this->view->render($response, 'sampleApp.html.twig', [
             'activeHeader' => 'index',

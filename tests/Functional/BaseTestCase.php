@@ -6,6 +6,8 @@ use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Environment;
+//use phpunit\Framework\
+//use PHPUnit\Framework;
 
 /**
  * This is an example class that shows how you could set up a method that
@@ -13,22 +15,25 @@ use Slim\Http\Environment;
  * tuned to the specifics of this skeleton app, so if your needs are
  * different, you'll need to change it.
  */
-class BaseTestCase extends \PHPUnit_Framework_TestCase
+class BaseTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Use middleware when running application?
      *
      * @var bool
      */
-    protected $withMiddleware = true;
+    //protected $withMiddleware = true;
+    protected $withMiddleware = false;
 
     /**
-     * Process the application given a request method and URI
      *
-     * @param string $requestMethod the request method (e.g. GET, POST, etc.)
-     * @param string $requestUri the request URI
-     * @param array|object|null $requestData the request data
-     * @return \Slim\Http\Response
+     * Process the application given a request method and URI
+     * @param $requestMethod
+     * @param $requestUri
+     * @param null $requestData
+     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @throws \Slim\Exception\MethodNotAllowedException
+     * @throws \Slim\Exception\NotFoundException
      */
     public function runApp($requestMethod, $requestUri, $requestData = null)
     {
@@ -36,7 +41,7 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
         $environment = Environment::mock(
             [
                 'REQUEST_METHOD' => $requestMethod,
-                'REQUEST_URI' => $requestUri
+                'REQUEST_URI' => $requestUri,
             ]
         );
 
@@ -47,7 +52,6 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
         if (isset($requestData)) {
             $request = $request->withParsedBody($requestData);
         }
-
         // Set up a response object
         $response = new Response();
 
@@ -64,6 +68,9 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
         if ($this->withMiddleware) {
             require __DIR__ . '/../../src/middleware.php';
         }
+
+        // validation.
+        require __DIR__.'/../../src/validation.php';
 
         // Register routes
         require __DIR__ . '/../../src/routes.php';
