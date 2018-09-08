@@ -13,7 +13,9 @@
             <div class="col-md-2 sidebar">
                 サイドバーの表示
                 <br>
-                <a href="{{ path_for('content1New', {}) }}">登録</a>
+                {% if session.isAuth is same as(true) %}
+                    <a href="{{ path_for('content1New', {}) }}">登録</a>
+                {% endif %}
             </div>
         </div>
     </div>

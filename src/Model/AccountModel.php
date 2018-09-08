@@ -42,11 +42,14 @@ class AccountModel
      */
     public function insertAccountData($email, $account, $password)
     {
+        // パスワードハッシュ化.
+        $hashedPass = password_hash($password, PASSWORD_DEFAULT);
+
         $sql = 'insert into account (name, email, password) values(:name, :email, :password)';
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':name', $account);
         $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':password', $hashedPass);
         $stmt->execute();
     }
 
@@ -61,7 +64,8 @@ class AccountModel
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':email', $email);
         $stmt->execute();
-        return $stmt->fetchColumn(0) === 0 ? false: true;
+        $result = $stmt->fetchColumn(0);
+        return (int)$result === 0 ? false: true;
     }
 
     /**
@@ -86,12 +90,14 @@ class AccountModel
      */
     public function isAuthAccount($account, $password)
     {
-        $sql = 'select count(*) from account where name = :account and password = :password';
+        $sql = 'select name, password from account where name = :account ';
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':account', $account);
-        $stmt->bindParam(':password', $password);
+//        $stmt->bindParam(':password', $password);
         $stmt->execute();
-        return $stmt->fetchColumn(0) === 0 ? false: true;
+        //return $stmt->fetchColumn(0) === 0 ? false: true;
+        $hashedPassword = $stmt->fetch()['password'];
+        return password_verify($password, $hashedPassword);
     }
     // /**
     //  * すべてのアカウント情報を取得する

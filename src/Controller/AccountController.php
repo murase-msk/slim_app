@@ -14,6 +14,11 @@ use src\Model\AccountModel;
 use Slim\Http\Response;
 use Slim\Http\Request;
 
+/**
+ * Class AccountController
+ * アカウント関係
+ * @package src\Controller
+ */
 class AccountController extends BaseController
 {
     private $view;
@@ -168,48 +173,35 @@ class AccountController extends BaseController
 //            );
 //        }
         // リクエストパラメータ受け取り.
-        $email = $request->getParsedBody()['email'];
-        $account = $request->getParsedBody()['account'];
-        $password = $request->getParsedBody()['password'];
-        $password2 = $request->getParsedBody()['password2'];
+        $reqParams = $request->getParsedBody();
         // 2つ入力したパスワードが一致しているか.
-        if (strcmp($password, $password2) !== 0) {
-            $request = $request->withAttribute('has_errors', true);
-            $errors = $request->getAttribute('errors');
-            $errors = array_merge($errors, array('password2'=>['上記で入力したパスワードと一致しません']));
-            $request = $request->withAttribute('errors', $errors);
+        if (strcmp($reqParams['password'], $reqParams['password2']) !== 0) {
+            $request = $this->setValidationErrMsg($request, 'password2', '上記で入力したパスワードと一致しません');
         }
         // 過去に登録したデータがないか.
-        if ($this->accountModel->isSameEmail($email)) {
+        if ($this->accountModel->isSameEmail($reqParams['email'])) {
             // 登録済みのE-mailです.
-            $request = $request->withAttribute('has_errors', true);
-            $errors = $request->getAttribute('errors');
-            $errors = array_merge($errors, array('email'=>['登録済みのメールアドレスです']));
-            $request = $request->withAttribute('errors', $errors);
+            $request = $this->setValidationErrMsg($request, 'email', '登録済みのメールアドレスです');
         }
-        if ($this->accountModel->isSameAccount($account)) {
+        if ($this->accountModel->isSameAccount($reqParams['account'])) {
             // 登録済みのアカウント名です.
-            $request = $request->withAttribute('has_errors', true);
-            $errors = $request->getAttribute('errors');
-            $errors = array_merge($errors, array('account'=>['登録済みのアカウント名です']));
-            $request = $request->withAttribute('errors', $errors);
+            $request = $this->setValidationErrMsg($request, 'account', '登録済みのアカウント名です');
         }
         // バリデーションエラーがあれば入力画面へ返す(リダイレクト).
         if ($request->getAttribute('has_errors')) { // 登録不可.
             $errors = $request->getAttribute('errors');
             // バリデーションエラー形式 errors['エラーの種別']=['エラーメッセージ']
             // フラッシュメッセージ.
-            $this->flash->addMessage('email', $email);
-            $this->flash->addMessage('account', $account);
+            $this->flash->addMessage('email', $reqParams['email']);
+            $this->flash->addMessage('account', $reqParams['account']);
             $this->flash->addMessage('errors', $errors);
             $uri = $request->getUri()->withPath($this->router->pathFor('signUp'));
             return $response->withRedirect((string)$uri, 301);
         } else {    // 登録可能.
-            $this->accountModel->insertAccountData($email, $account, $password);
-
+            $this->accountModel->insertAccountData($reqParams['email'], $reqParams['account'], $reqParams['password']);
             // セッション登録.
             $_SESSION['isAuth'] = true;
-            $_SESSION['account'] = $account;
+            $_SESSION['account'] = $reqParams['account'];
             // TODO: リダイレクトする
 //            $uri = $request->getUri()->withPath($this->router->pathFor('signIn'));
 //            return $response->withRedirect('signUpComplete.html.twig', 301);
@@ -221,6 +213,25 @@ class AccountController extends BaseController
                 ]
             );
         }
+    }
+
+    /**
+     * バリデーションエラーメッセージをRequestのattributeにセットする
+     * @param Request $request
+     * @param $index
+     * @param $msg
+     * @return Request
+     */
+    private function setValidationErrMsg(
+        /** @noinspection PhpUnusedParameterInspection */
+        Request $request,
+        $index, $msg)
+    {
+        $request = $request->withAttribute('has_errors', true);
+        $errors = $request->getAttribute('errors');
+        $errors = array_merge($errors, array($index=>[$msg]));
+        $request = $request->withAttribute('errors', $errors);
+        return $request;
     }
 
 //     /**

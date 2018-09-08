@@ -25,7 +25,7 @@ class BaseController
      * @param $csrf
      * @return array
      */
-    public static function generateCsrfKeyValue($request, $csrf)
+    public static function generateCsrfKeyValue(\Slim\Http\Request $request, \Slim\Csrf\Guard $csrf)
     {
         // CSRF用Key-Value生成.
         $csrfNameKey = $csrf->getTokenNameKey();//'csrf_name';

@@ -33,12 +33,9 @@ class Content1
         /** @noinspection PhpUnusedParameterInspection */
         array $args)
     {
-        // TODO:コンテンツ一覧をDBから取得
-
         return $this->view->render($response, 'content1.html.twig', [
-            'name' => 'aaba',
             'activeHeader' => 'content1',
-            'isAuth' => $_SESSION['isAuth']
+            'session' => $_SESSION
         ]);
     }
 

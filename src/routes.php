@@ -31,36 +31,36 @@ $app->post('/registerAccount', 'AccountController' . ':registerAccount')
     ->add(new \DavidePastore\Slim\Validation\Validation($validators));
 
 
-
-$app->get('/noCsrfPage', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-    return $this->view->render($response, 'noCsrfPage.html.twig', []);
-});
-$app->post('/noCsrf', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-    return $this->view->fetchFromString('<p>Pushed button</p>', []);
-});
-
-$app->get('/csrfPage', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-    // CSRF用Key-Value生成.
-    $csrfNameKey = $this->csrf->getTokenNameKey();
-    $csrfValueKey = $this->csrf->getTokenValueKey();
-    $csrfName = $request->getAttribute($csrfNameKey);
-    $csrfValue = $request->getAttribute($csrfValueKey);
-
-    return $this->view->render($response, 'csrfPage.html.twig', [
-        'csrf' => [
-            'keys' => [
-                'name' => $csrfNameKey,
-                'value' => $csrfValueKey
-            ],
-            'name' => $csrfName,
-            'value' => $csrfValue
-        ]
-    ]);
-});
-$app->post('/csrf', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
-    $str = $this->view->fetchFromString('<p>Pushed button</p>', []);
-    return $response->getBody()->write($str);
-});
+//
+//$app->get('/noCsrfPage', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+//    return $this->view->render($response, 'noCsrfPage.html.twig', []);
+//});
+//$app->post('/noCsrf', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+//    return $this->view->fetchFromString('<p>Pushed button</p>', []);
+//});
+//
+//$app->get('/csrfPage', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+//    // CSRF用Key-Value生成.
+//    $csrfNameKey = $this->csrf->getTokenNameKey();
+//    $csrfValueKey = $this->csrf->getTokenValueKey();
+//    $csrfName = $request->getAttribute($csrfNameKey);
+//    $csrfValue = $request->getAttribute($csrfValueKey);
+//
+//    return $this->view->render($response, 'csrfPage.html.twig', [
+//        'csrf' => [
+//            'keys' => [
+//                'name' => $csrfNameKey,
+//                'value' => $csrfValueKey
+//            ],
+//            'name' => $csrfName,
+//            'value' => $csrfValue
+//        ]
+//    ]);
+//});
+//$app->post('/csrf', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
+//    $str = $this->view->fetchFromString('<p>Pushed button</p>', []);
+//    return $response->getBody()->write($str);
+//});
 
 //$app->get('/[{name}]', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {
 //    // Sample log message
