@@ -31,6 +31,10 @@ return [
         'user' => 'postgres',
         'pass' => 'postgres',
         'dbname'=> 'slim_app'
-       ]
+       ],
+        'root_account'=>[
+            'name'=>getenv('ROOT_NAME'),
+            'pass'=>getenv('ROOT_PASS')
+        ]
     ],
 ];

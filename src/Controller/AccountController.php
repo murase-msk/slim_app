@@ -26,8 +26,15 @@ class AccountController extends BaseController
     private $router;
     private $csrf;
     private $flash;
+    private $session;
 
-    function __construct(\Slim\Views\Twig $view, AccountModel $accountModel, \Slim\Router $router, \Slim\Csrf\Guard $csrf, \Slim\Flash\Messages $flash)
+    function __construct(
+        \Slim\Views\Twig $view,
+        AccountModel $accountModel,
+        \Slim\Router $router,
+        \Slim\Csrf\Guard $csrf,
+        \Slim\Flash\Messages $flash,
+        \src\SessionHelper $session)
     {
         parent::__construct();
         $this->view = $view;
@@ -35,6 +42,7 @@ class AccountController extends BaseController
         $this->router = $router;
         $this->csrf = $csrf;
         $this->flash = $flash;
+        $this->session = $session;
     }
 
     /**
@@ -106,9 +114,12 @@ class AccountController extends BaseController
 
     {
         // セッション削除して非ログイン状態を登録.
-        $_SESSION = array();
-        $_SESSION['isAuth'] = false;
-        $_SESSION['account'] = '';
+        $this->session->clear();
+        $this->session->set('isAuth', false);
+        $this->session->set('account', '');
+//        $_SESSION = array();
+//        $_SESSION['isAuth'] = false;
+//        $_SESSION['account'] = '';
         // トップページへリダイレクト.
         $uri = $request->getUri()->withPath($this->router->pathFor('index'));
         return $response->withRedirect((string)$uri, 301);
@@ -137,8 +148,10 @@ class AccountController extends BaseController
         $result = $this->accountModel->isAuthAccount($account, $password);
         if ($result) {    // ログインできた.
             // セッション登録.
-            $_SESSION['isAuth'] = true;
-            $_SESSION['account'] = $account;
+            $this->session->set('isAuth', true);
+            $this->session->set('account', $account);
+//            $_SESSION['isAuth'] = true;
+//            $_SESSION['account'] = $account;
             // TODO:ログインボタンを押したときのページへ飛ぶ
             $uri = $request->getUri()->withPath($this->router->pathFor('index'));
             return $response->withRedirect((string)$uri, 301);
@@ -200,8 +213,10 @@ class AccountController extends BaseController
         } else {    // 登録可能.
             $this->accountModel->insertAccountData($reqParams['email'], $reqParams['account'], $reqParams['password']);
             // セッション登録.
-            $_SESSION['isAuth'] = true;
-            $_SESSION['account'] = $reqParams['account'];
+            $this->session->set('isAuth', true);
+            $this->session->set('account', $reqParams['account']);
+//            $_SESSION['isAuth'] = true;
+//            $_SESSION['account'] = $reqParams['account'];
             // TODO: リダイレクトする
 //            $uri = $request->getUri()->withPath($this->router->pathFor('signIn'));
 //            return $response->withRedirect('signUpComplete.html.twig', 301);

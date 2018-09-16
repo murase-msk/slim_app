@@ -19,10 +19,12 @@ class Content1
 {
 
     private $view;
+    private $session;
 
-    function __construct(\Slim\Views\Twig $view)
+    function __construct(\Slim\Views\Twig $view, \SlimSession\Helper $session)
     {
         $this->view = $view;
+        $this->session = $session;
     }
 
     function index(
@@ -35,7 +37,8 @@ class Content1
     {
         return $this->view->render($response, 'content1.html.twig', [
             'activeHeader' => 'content1',
-            'session' => $_SESSION
+            'isAuth' => $this->session->get('isAuth'),
+            'account' => $this->session->get('account'),
         ]);
     }
 

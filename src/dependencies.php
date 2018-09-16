@@ -9,6 +9,12 @@ $container = $app->getContainer();
 //     return new Slim\Views\PhpRenderer($settings['template_path']);
 // };
 
+// セッション
+$container['session'] = function ($c) {
+    //return new \SlimSession\Helper;
+    return new \src\SessionHelper;
+};
+
 // フラッシュメッセージ.
 $container['flash'] = function ($c) {
     return new \Slim\Flash\Messages();
@@ -81,12 +87,14 @@ $container['db_psql'] = function ($container) {
 
 $container['SampleApp'] = function ($container) {
     $view = $container->get('view');
-    return new \src\Controller\SampleApp($view);
+    $session = $container->get('session');
+    return new \src\Controller\SampleApp($view, $session);
 };
 
 $container['Content1'] = function ($container) {
     $view = $container->get('view');
-    return new \src\Controller\Content1($view);
+    $session = $container->get('session');
+    return new \src\Controller\Content1($view, $session);
 };
 
 $container['accountModel'] = function ($container) {
@@ -100,5 +108,6 @@ $container['AccountController'] = function ($container) {
     $router = $container->get('router');
     $csrf = $container->get('csrf');
     $flash = $container->get('flash');
-    return new \src\Controller\AccountController($view, $accountModel, $router, $csrf, $flash);
+    $session = $container->get('session');
+    return new \src\Controller\AccountController($view, $accountModel, $router, $csrf, $flash, $session);
 };

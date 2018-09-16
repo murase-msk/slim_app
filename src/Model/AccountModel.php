@@ -83,7 +83,7 @@ class AccountModel
     }
 
     /**
-     * アカウント認証
+     * アカウント認証できるか
      * @param $account
      * @param $password
      * @return bool
@@ -98,6 +98,21 @@ class AccountModel
         //return $stmt->fetchColumn(0) === 0 ? false: true;
         $hashedPassword = $stmt->fetch()['password'];
         return password_verify($password, $hashedPassword);
+    }
+
+    /**
+     * アカウント削除
+     * @param $account
+     * @param $password
+     */
+    public function deleteAccount($account, $password)
+    {
+        if($this->isAuthAccount($account, $password)){
+            $sql = 'delete from account where name = :account';
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':account', $account);
+            $stmt->execute();
+        }
     }
     // /**
     //  * すべてのアカウント情報を取得する

@@ -10,10 +10,12 @@ class SampleApp
 {
 
     private $view;
+    private $session;
 
-    public function __construct(\Slim\Views\Twig $view)
+    public function __construct(\Slim\Views\Twig $view, \src\SessionHelper $session)
     {
         $this->view = $view;
+        $this->session = $session;
     }
 
     public function index(
@@ -24,14 +26,12 @@ class SampleApp
         /** @noinspection PhpUnusedParameterInspection */
         array $args)
     {
-        if(!isset($_SESSION)){
-            $_SESSION = [];
-        }
 
         //$result = $this->sampleModel->getData();
         return $this->view->render($response, 'sampleApp.html.twig', [
             'activeHeader' => 'index',
-            'session' => $_SESSION,
+            'isAuth' => $this->session->get('isAuth'),
+            'account' => $this->session->get('account'),
         ]);
     }
 
