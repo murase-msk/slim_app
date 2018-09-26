@@ -1,11 +1,18 @@
 {
     "name": "slim/slim-skeleton",
     "description": "A Slim Framework skeleton application for rapid development",
-    "keywords": ["microframework", "rest", "router", "psr7"],
+    "keywords": [
+        "microframework",
+        "rest",
+        "router",
+        "psr7"
+    ],
     "homepage": "http://github.com/slimphp/Slim-Skeleton",
     "license": "MIT",
     "require": {
         "php": ">=7.2.0",
+        "ext-PDO": "*",
+        "ext-pdo_pgsql": "*",
         "slim/slim": "^3.1",
         "slim/php-view": "^2.0",
         "monolog/monolog": "^1.17",
@@ -13,7 +20,9 @@
         "twbs/bootstrap": "3.3.6",
         "davidepastore/slim-validation": "^0.5.0",
         "slim/csrf": "^0.8.3",
-        "slim/flash": "^0.4.0"
+        "slim/flash": "^0.4.0",
+        "bryanjhv/slim-session": "~3.0",
+        "facebook/webdriver": "^1.6"
     },
     "require-dev": {
         "phpunit/phpunit": "7.2.4"
@@ -21,18 +30,17 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/",
-            "src\\":"src/"
+            "src\\": "src/",
+            "database\\": "database/"
         }
     },
     "config": {
-        "process-timeout" : 0
+        "process-timeout": 0
     },
     "scripts": {
         "start": "php -S localhost:8080 -t public",
-        "test": "phpunit",
-        "reload": [
-          "composer dumpautoload"
-        ]
+        "test": "vendor/bin/phpunit --testdox --colors tests/",
+        "coverage": "vendor/bin/phpunit --coverage-html .coverage tests",
+        "reload": "composer dumpautoload"
     }
-
 }

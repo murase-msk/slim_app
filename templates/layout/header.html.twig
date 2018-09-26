@@ -13,24 +13,24 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav main_header">
                 <li {{ activeHeader == 'index' ? 'class=active' : '' }}>
-                    <a href="{{ path_for('index', {'active-header': 'index'}) }}">Home</a>
+                    <a href="{{ path_for('index', {'active-header': 'index'}) }}" id="home_button">Home</a>
                 </li>
                 <li {{ activeHeader == 'content1' ? 'class=active' : '' }}>
-                    <a href="{{ path_for('content1', {'active-header': 'content1'}) }}">コンテンツ1</a>
+                    <a href="{{ path_for('content1', {'active-header': 'content1'}) }}" id="content1_utton">コンテンツ1</a>
                 </li>
                 <li {{ activeHeader == 'content2' ? 'class=active' : '' }}>
                     <a href="#">コンテンツ2</a>
                 </li>
             </ul>
-            {% if (session is defined) and session['isAuth'] %}
+            {% if (isAuth is same as (true)) %}
               <ul class="nav navbar-nav navbar-right">
-                  <li><a href="#">{{ session['account'] }}</a></li>
-                  <li><a href="{{ path_for('logout', {}) }}">Logout</a></li>
+                  <li><a href="#" id="account_button">{{ account }}</a></li>
+                  <li><a href="{{ path_for('logout', {}) }}" id="logout_button">Logout</a></li>
               </ul>
             {% else %}
               <ul class="nav navbar-nav navbar-right">
-                  <li><a href="{{ path_for('signUp', {}) }}">Sign Up</a></li>
-                  <li><a href="{{ path_for('signIn', {}) }}">Sign In</a></li>
+                  <li><a href="{{ path_for('signUp', {}) }}" id="sign_up_button">Sign Up</a></li>
+                  <li><a href="{{ path_for('signIn', {}) }}" id="sign_in_button">Sign In</a></li>
               </ul>
             {% endif %}
         </div><!--/.nav-collapse -->

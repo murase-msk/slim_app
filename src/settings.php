@@ -15,11 +15,11 @@ return [
         ],
 
         // Monolog settings
-        'logger' => [
-            'name' => 'slim-app',
-            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
-            'level' => \Monolog\Logger::DEBUG,
-        ],
+//        'logger' => [
+//            'name' => 'slim-app',
+//            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
+//            'level' => \Monolog\Logger::DEBUG,
+//        ],
         'db' => [
             'host' => 'localhost',
             'user' => 'root',
@@ -31,6 +31,10 @@ return [
         'user' => 'postgres',
         'pass' => 'postgres',
         'dbname'=> 'slim_app'
-       ]
+       ],
+        'root_account'=>[
+            'name'=>getenv('ROOT_NAME'),
+            'pass'=>getenv('ROOT_PASS')
+        ]
     ],
 ];

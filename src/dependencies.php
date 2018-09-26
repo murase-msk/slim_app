@@ -9,6 +9,12 @@ $container = $app->getContainer();
 //     return new Slim\Views\PhpRenderer($settings['template_path']);
 // };
 
+// セッション
+$container['session'] = function ($c) {
+    //return new \SlimSession\Helper;
+    return new \src\SessionHelper;
+};
+
 // フラッシュメッセージ.
 $container['flash'] = function ($c) {
     return new \Slim\Flash\Messages();
@@ -25,10 +31,10 @@ $container['accountAuth'] = function ($c) {
 $container['csrf'] = function ($c) {
     $guard = new \Slim\Csrf\Guard;
     // CSRFチェック失敗時.
-    $guard->setFailureCallable(function ($request, $response, $next) {
-        $request = $request->withAttribute("csrf_status", false);
-        return $next($request, $response);
-    });
+//    $guard->setFailureCallable(function ($request, $response, $next) {
+//        $request = $request->withAttribute("csrf_status", false);
+//        return $next($request, $response);
+//    });
     return $guard;
 };
 
@@ -58,13 +64,13 @@ $container['view'] = function ($container) {
     return $view;
 };
 
-$container['db'] = function ($container) {
-    $db = $container['settings']['db'];
-    $pdo = new PDO('mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'], $db['user'], $db['pass']);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    return $pdo;
-};
+//$container['db'] = function ($container) {
+//    $db = $container['settings']['db'];
+//    $pdo = new PDO('mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'], $db['user'], $db['pass']);
+//    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+//    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+//    return $pdo;
+//};
 $container['db_psql'] = function ($container) {
     $db = $container['settings']['db_psql'];
     $pdo = new PDO('pgsql:host=' . $db['host'] . ';dbname=' . $db['dbname'], $db['user'], $db['pass']);
@@ -74,20 +80,21 @@ $container['db_psql'] = function ($container) {
 };
 
 
-$container['sampleModel'] = function ($container) {
-    $sampleModel = new \src\Model\SampleModel($container['db']);
-    return $sampleModel;
-};
+//$container['sampleModel'] = function ($container) {
+//    $sampleModel = new \src\Model\SampleModel($container['db']);
+//    return $sampleModel;
+//};
 
 $container['SampleApp'] = function ($container) {
     $view = $container->get('view');
-    $sampleModel = $container->get('sampleModel');
-    return new \src\Controller\SampleApp($view, $sampleModel);
+    $session = $container->get('session');
+    return new \src\Controller\SampleApp($view, $session);
 };
 
 $container['Content1'] = function ($container) {
     $view = $container->get('view');
-    return new \src\Controller\Content1($view);
+    $session = $container->get('session');
+    return new \src\Controller\Content1($view, $session);
 };
 
 $container['accountModel'] = function ($container) {
@@ -101,5 +108,6 @@ $container['AccountController'] = function ($container) {
     $router = $container->get('router');
     $csrf = $container->get('csrf');
     $flash = $container->get('flash');
-    return new \src\Controller\AccountController($view, $accountModel, $router, $csrf, $flash);
+    $session = $container->get('session');
+    return new \src\Controller\AccountController($view, $accountModel, $router, $csrf, $flash, $session);
 };
