@@ -33,11 +33,14 @@ class E2ELoginTest extends E2EBaseTest
     protected const ACCOUNT = 'testaccount';
     protected const PASS = 'test123';
 
+    protected static $HOST_NAME = 'localhost';
+
     public static function setUpBeforeClass()
     {
         // 設定読み込み.
         $settings = require __DIR__ . '/../../src/settings.php';
         self::$settings = $settings['settings'];
+        self::$HOST_NAME = $settings['settings']['env'] === 'dev' ? 'slim_app.test' : 'localhost';
 
         // selenium
         $host = 'http://localhost:4444/wd/hub';
@@ -68,7 +71,7 @@ class E2ELoginTest extends E2EBaseTest
     public function indexPage()
     {
         // 指定URLへ遷移
-        self::$driver->get('http://slim_app.test/');
+        self::$driver->get('http://'.self::$HOST_NAME.'/');
         $this->assertEquals('sampleApp', self::$driver->getTitle());
     }
 
@@ -79,11 +82,11 @@ class E2ELoginTest extends E2EBaseTest
      */
     public function signUpPage()
     {
-        self::$driver->get('http://slim_app.test/');
+        self::$driver->get('http://'.self::$HOST_NAME.'/');
         $element = self::$driver->findElement(WebDriverBy::id('sign_up_button'));
         $element->click();
         self::$driver->wait(3);
-        $this->assertEquals('http://slim_app.test/signUp', self::$driver->getCurrentURL());
+        $this->assertEquals('http://'.self::$HOST_NAME.'/signUp', self::$driver->getCurrentURL());
     }
 
     /**
@@ -111,7 +114,7 @@ class E2ELoginTest extends E2EBaseTest
 //        self::$driver->takeScreenshot($file);
 
         // 登録完了画面へ遷移できたか.
-        $this->assertEquals('http://slim_app.test/registerAccount', self::$driver->getCurrentURL());
+        $this->assertEquals('http://'.self::$HOST_NAME.'/registerAccount', self::$driver->getCurrentURL());
         $element = self::$driver->findElement(WebDriverBy::className('panel-body'));
         $this->assertContains('登録完了しました。', $element->getText());
         // トップページへ戻る.
@@ -145,11 +148,11 @@ class E2ELoginTest extends E2EBaseTest
      */
     public function signInPage()
     {
-        self::$driver->get('http://slim_app.test/');
+        self::$driver->get('http://'.self::$HOST_NAME.'/');
         $element = self::$driver->findElement(WebDriverBy::id('sign_in_button'));
         $element->click();
         self::$driver->wait(3);
-        $this->assertEquals('http://slim_app.test/signIn', self::$driver->getCurrentURL());
+        $this->assertEquals('http://'.self::$HOST_NAME.'/signIn', self::$driver->getCurrentURL());
     }
 
     /**
@@ -174,7 +177,7 @@ class E2ELoginTest extends E2EBaseTest
 //        self::$driver->takeScreenshot($file);
 
         // トップページへ遷移できたか.
-        $this->assertEquals('http://slim_app.test/', self::$driver->getCurrentURL());
+        $this->assertEquals('http://'.self::$HOST_NAME.'/', self::$driver->getCurrentURL());
         // root アカウントになったか.
         $element = self::$driver->findElement(WebDriverBy::id('account_button'));
         $this->assertEquals($accountName, $element->getText());
