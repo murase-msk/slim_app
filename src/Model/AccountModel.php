@@ -9,6 +9,8 @@
 namespace src\Model;
 
 
+use \database\init\AccountTable;
+
 class AccountModel
 {
     private $con;
@@ -45,7 +47,11 @@ class AccountModel
         // パスワードハッシュ化.
         $hashedPass = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = 'insert into account (name, email, password) values(:name, :email, :password)';
+        $sql = 'insert into '.AccountTable::tableName.' ('
+            .AccountTable::ACCOUNT_NAME.', '
+            .AccountTable::EMAIL.', '
+            .AccountTable::HASHED_PASSWORD
+            .') values(:name, :email, :password)';
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':name', $account);
         $stmt->bindParam(':email', $email);
@@ -60,7 +66,7 @@ class AccountModel
      * @return boolean
      */
     public function isSameEmail($email){
-        $sql = 'select count(*) from account where email = :email';
+        $sql = 'select count(*) from '.AccountTable::tableName.' where '.AccountTable::EMAIL.' = :email';
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':email', $email);
         $stmt->execute();
@@ -75,7 +81,7 @@ class AccountModel
      * @return boolean
      */
     public function isSameAccount($account){
-        $sql = 'select count(*) from account where name = :account';
+        $sql = 'select count(*) from '.AccountTable::tableName.' where '.AccountTable::ACCOUNT_NAME.' = :account';
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':account', $account);
         $stmt->execute();
@@ -90,13 +96,16 @@ class AccountModel
      */
     public function isAuthAccount($account, $password)
     {
-        $sql = 'select name, password from account where name = :account ';
+        $sql = 'select '
+            .AccountTable::ACCOUNT_NAME.', '
+            .AccountTable::HASHED_PASSWORD
+            .' from '.AccountTable::tableName.' where '.AccountTable::ACCOUNT_NAME.' = :account ';
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':account', $account);
 //        $stmt->bindParam(':password', $password);
         $stmt->execute();
         //return $stmt->fetchColumn(0) === 0 ? false: true;
-        $hashedPassword = $stmt->fetch()['password'];
+        $hashedPassword = $stmt->fetch()[AccountTable::HASHED_PASSWORD];
         return password_verify($password, $hashedPassword);
     }
 
@@ -108,7 +117,7 @@ class AccountModel
     public function deleteAccount($account, $password)
     {
         if($this->isAuthAccount($account, $password)){
-            $sql = 'delete from account where name = :account';
+            $sql = 'delete from '.AccountTable::tableName.' where '.AccountTable::ACCOUNT_NAME.' = :account';
             $stmt = $this->con->prepare($sql);
             $stmt->bindParam(':account', $account);
             $stmt->execute();
