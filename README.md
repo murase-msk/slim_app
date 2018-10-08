@@ -6,7 +6,7 @@
 
 ## 動作要件
 
-## push test 12345
+## push test 123456
 
 ## 主要技術
   - Ubuntu16.04
