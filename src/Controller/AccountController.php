@@ -9,8 +9,6 @@
 namespace src\Controller;
 
 use src\Model\AccountModel;
-//use Psr\Http\Message\ServerRequestInterface;
-//use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 use Slim\Http\Request;
 
