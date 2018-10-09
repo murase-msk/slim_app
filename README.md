@@ -6,7 +6,7 @@
 
 ## 動作要件
 
-## push test 1
+## push test 12
 
 ## 主要技術
   - Ubuntu16.04
