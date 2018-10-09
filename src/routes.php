@@ -6,30 +6,35 @@
 
 // setName()で名前を割当ることで、PathFor(name,[index, value])でURLを生成できる
 
-// トップページ.
-$app->get('/', 'SampleApp' . ':index')->setName('index');
+$app->group('', function () use ($app) {
+    // トップページ.
+    $app->get('/', 'SampleApp' . ':index')->setName('index');
 
-// ログイン・ログアウト.
-$app->get('/signIn','AccountController' . ':signIn')->setName('signIn');
-$app->get('/signUp','AccountController' . ':signUp')->setName('signUp');
-$app->get('/logout','AccountController' . ':logout')->setName('logout');
-//$app->get('/signUpTest','AccountController' . ':test')->setName('accountTest');
+    // ログイン・ログアウト.
+    $app->get('/signIn', 'AccountController' . ':signIn')->setName('signIn');
+    $app->get('/signUp', 'AccountController' . ':signUp')->setName('signUp');
+    $app->get('/logout', 'AccountController' . ':logout')->setName('logout');
+    //$app->get('/signUpTest','AccountController' . ':test')->setName('accountTest');
 
-// コンテンツ1に新規登録.
-$app->get('/content1/new', 'Content1' . ':new')->setName('content1New');
-// コンテンツ1にコンテンツ登録.
-$app->get('/content1/register', 'Content1' . ':register')->setName('content1Register');
-// コンテンツ.
-$app->get('/content1', 'Content1' . ':index')->setName('content1');
+    // コンテンツ1に新規登録.
+    $app->get('/content1/new', 'Content1' . ':new')->setName('content1New');
+    // コンテンツ1にコンテンツ登録.
+    $app->get('/content1/register', 'Content1' . ':register')->setName('content1Register');
+    // コンテンツ.
+    $app->get('/content1', 'Content1' . ':index')->setName('content1');
 
+    // 認証.
+    $app->post('/auth', 'AccountController' . ':auth')->setName('auth');
 
-// 認証.
-$app->post('/auth', 'AccountController' . ':auth')->setName('auth');
-// 登録.
-$app->post('/registerAccount', 'AccountController' . ':registerAccount')
-    ->setName('registerAccount')
-    ->add(new \DavidePastore\Slim\Validation\Validation($validators));
+    // 登録.
+    $app->post('/registerAccount', 'AccountController' . ':registerAccount')
+        ->setName('registerAccount');
+        //->add(new \DavidePastore\Slim\Validation\Validation($validators));
 
+})->add($container->get('csrf'));
+
+// GitHubからWebHook.
+$app->post('/gitHubWebHook','DeployController'.':gitHubWebHook');
 
 //
 //$app->get('/noCsrfPage', function (Psr\Http\Message\ServerRequestInterface $request, Psr\Http\Message\ResponseInterface $response, array $args) {

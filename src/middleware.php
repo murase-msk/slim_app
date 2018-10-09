@@ -4,7 +4,7 @@
 // ↑ 内側
 
 // CSRF対策.
-$app->add($container->get('csrf'));
+//$app->add($container->get('csrf'));
 
 // セッション.
 //$app->add(new \Slim\Middleware\Session([]));

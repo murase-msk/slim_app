@@ -30,6 +30,8 @@ $container['accountAuth'] = function ($c) {
 // CSRF
 $container['csrf'] = function ($c) {
     $guard = new \Slim\Csrf\Guard;
+    // トークン永続化.
+    //$guard->setPersistentTokenMode(true);
     // CSRFチェック失敗時.
 //    $guard->setFailureCallable(function ($request, $response, $next) {
 //        $request = $request->withAttribute("csrf_status", false);
@@ -110,4 +112,8 @@ $container['AccountController'] = function ($container) {
     $flash = $container->get('flash');
     $session = $container->get('session');
     return new \src\Controller\AccountController($view, $accountModel, $router, $csrf, $flash, $session);
+};
+
+$container['DeployController'] = function ($container) {
+    return new \src\Controller\DeployController();
 };

@@ -5,6 +5,7 @@
 use Respect\Validation\Validator as v;
 
 // TODO 正規表現を使う
+// TODO　dependency.php に入れれない？
 
 //v::countryCode()->validate('JP');
 
